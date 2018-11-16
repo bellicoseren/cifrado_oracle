@@ -19,7 +19,7 @@ public class PmSucursalDAO implements IPmSucursal{
 	@Override
 	public List<PmSucursalDTO> leer() throws Exception {
 		String leer = "SELECT ID_SUCURSAL, ID_NEGOCIO, NOMBRE_SUCURSAL, DIRECCION_SUCURSAL,"
-				+ " DIRECCION_DETALLE_SUCURSAL, LONGITUD, LATITUD, ID_ESTADO FROM FRAMEWORK.PM_SUCURSALES";
+				+ " DIRECCION_DETALLE_SUCURSAL, LONGITUD, LATITUD, ID_ESTADO FROM FRAMEWORK.PM_SUCURSALES_C";
 		conn = ConnectionFactory.getInstance().getConexion();
 		if(conn == null){
 			System.out.println("No se estableció conexión con la base de datos");
@@ -32,9 +32,12 @@ public class PmSucursalDAO implements IPmSucursal{
 			dto = new PmSucursalDTO();
 			dto.setIdSucursal(rs.getInt("ID_SUCURSAL"));
 			dto.setIdNegocio(rs.getInt("ID_NEGOCIO"));
-			dto.setNombreSucursal(rs.getString("NOMBRE_SUCURSAL"));
-			dto.setDireccionSucursal(rs.getString("DIRECCION_SUCURSAL"));
-			dto.setDireccionDetalleSucursal(rs.getString("DIRECCION_DETALLE_SUCURSAL"));
+			dto.setNombreSucursal(Cifrado.decifrar(clave, vi, rs.getString("NOMBRE_SUCURSAL")));
+//			dto.setNombreSucursal(rs.getString("NOMBRE_SUCURSAL"));
+			dto.setDireccionSucursal(Cifrado.decifrar(clave, vi, rs.getString("DIRECCION_SUCURSAL")));
+//			dto.setDireccionSucursal(rs.getString("DIRECCION_SUCURSAL"));
+			dto.setDireccionDetalleSucursal(rs.getString("DIRECCION_DETALLE_SUCURSAL") != null?Cifrado.decifrar(clave, vi, rs.getString("DIRECCION_DETALLE_SUCURSAL")):rs.getString("DIRECCION_DETALLE_SUCURSAL"));
+//			dto.setDireccionDetalleSucursal(rs.getString("DIRECCION_DETALLE_SUCURSAL"));
 			dto.setLongitud(rs.getDouble("LONGITUD"));
 			dto.setLatitud(rs.getDouble("LATITUD"));
 			dto.setIdEstado(rs.getInt("ID_ESTADO"));

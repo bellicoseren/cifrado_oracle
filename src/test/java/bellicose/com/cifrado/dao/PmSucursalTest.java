@@ -9,9 +9,11 @@ import bellicose.com.cifrado.dto.PmSucursalDTO;
 
 public class PmSucursalTest {
 
+	@Test
 	public void leer(){
 		PmSucursalDAO dao = new PmSucursalDAO();
 		try {
+			long inicia = System.currentTimeMillis();
 			List<PmSucursalDTO> sucursales = dao.leer();
 			for (PmSucursalDTO pmSucursalDTO : sucursales) {
 				System.out.println(
@@ -24,12 +26,13 @@ public class PmSucursalTest {
 						pmSucursalDTO.getLatitud() + " " +
 						pmSucursalDTO.getIdEstado());
 			}
+			long termina = System.currentTimeMillis() - inicia;
+			System.out.println("\nTiempo que tarda: " + termina);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	@Test
 	public void insertarCifTest(){
 		PmSucursalDAO dao = new PmSucursalDAO();
 		try {
