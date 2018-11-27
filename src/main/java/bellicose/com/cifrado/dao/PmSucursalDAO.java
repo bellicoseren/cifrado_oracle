@@ -117,8 +117,8 @@ public class PmSucursalDAO implements IPmSucursal{
 			dtos.add(dto);
 			
 		}
-		
-		
+		String dropTable = "drop table FRAMEWORK.PM_SUCURSALES_DESC";
+		ps.executeUpdate(dropTable);
 		
 		if(conn != null){
 			conn.close();
@@ -179,11 +179,11 @@ public class PmSucursalDAO implements IPmSucursal{
 		ps.setInt(8, dto.getIdEstado());
 		
 		boolean result = ps.executeUpdate() > 0;
-		if(result){
-			System.out.println("Cifrado insertado correctamente");
-		} else {
-			System.out.println("Falló la inserción");
-		}
+//		if(result){
+//			System.out.println("Cifrado insertado correctamente");
+//		} else {
+//			System.out.println("Falló la inserción");
+//		}
 		if(ps != null){
 			ps.close();
 		}

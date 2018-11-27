@@ -40,7 +40,7 @@ public class PmSucursalTest {
 		PmSucursalDAO dao = new PmSucursalDAO();
 		try {
 			long inicia = System.currentTimeMillis();
-			List<PmSucursalDTO> sucursales = dao.leerLike("%Abedules%");
+			List<PmSucursalDTO> sucursales = dao.leerLike("%Leiva%");
 			for (PmSucursalDTO pmSucursalDTO : sucursales) {
 				System.out.println(
 						pmSucursalDTO.getIdSucursal() + " " +
