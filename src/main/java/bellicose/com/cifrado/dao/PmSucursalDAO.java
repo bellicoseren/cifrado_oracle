@@ -16,16 +16,32 @@ public class PmSucursalDAO implements IPmSucursal{
 	String clave = "1111111111111111";
 	String vi = "1111111111111111";
 	
+	
+	
 	@Override
 	public List<PmSucursalDTO> leer() throws Exception {
 		String leer = "SELECT ID_SUCURSAL, ID_NEGOCIO, NOMBRE_SUCURSAL, DIRECCION_SUCURSAL,"
-				+ " DIRECCION_DETALLE_SUCURSAL, LONGITUD, LATITUD, ID_ESTADO FROM FRAMEWORK.PM_SUCURSALES_C";
+				+ " DIRECCION_DETALLE_SUCURSAL, LONGITUD, LATITUD, ID_ESTADO FROM FRAMEWORK.PM_SUCURSALES_C ";
+		
+		String nvaTabla = "CREATE TABLE FRAMEWORK.PM_SUCURSALES_DESC (ID_SUCURSAL NUMBER NOT NULL, "
+				+ "ID_NEGOCIO NUMBER NOT NULL,"
+				+ "NOMBRE_SUCURSAL VARCHAR2(100 CHAR),"
+				+ "DIRECCION_SUCURSAL VARCHAR2(200 CHAR),"
+				+ "DIRECCION_DETALLE_SUCURSAL VARCHAR2(200 CHAR),"
+				+ "LONGITUD NUMBER(9,6) NOT NULL,"
+				+ "LATITUD NUMBER(9,6) NOT NULL,"
+				+ "ID_ESTADO NUMBER(10))";
+		
 		conn = ConnectionFactory.getInstance().getConexion();
 		if(conn == null){
 			System.out.println("No se estableció conexión con la base de datos");
 		}
 		List<PmSucursalDTO> dtos = new ArrayList<>();
 		PreparedStatement ps = conn.prepareStatement(leer);
+		
+		PreparedStatement ps2 = conn.prepareStatement(nvaTabla);
+		ps2.execute();
+		
 		ResultSet rs = ps.executeQuery();
 		PmSucursalDTO dto;
 		while(rs.next()){
@@ -42,6 +58,7 @@ public class PmSucursalDAO implements IPmSucursal{
 			dto.setLatitud(rs.getDouble("LATITUD"));
 			dto.setIdEstado(rs.getInt("ID_ESTADO"));
 			dtos.add(dto);
+			insertarCifrado(dto);
 		}
 		if(conn != null){
 			conn.close();
@@ -55,6 +72,67 @@ public class PmSucursalDAO implements IPmSucursal{
 		
 		return dtos;
 	}
+	
+
+	
+	@Override
+	public List<PmSucursalDTO> leerLike(String dato) throws Exception {
+		String leer = "SELECT ID_SUCURSAL, ID_NEGOCIO, NOMBRE_SUCURSAL, DIRECCION_SUCURSAL,"
+				+ " DIRECCION_DETALLE_SUCURSAL, LONGITUD, LATITUD, ID_ESTADO FROM FRAMEWORK.PM_SUCURSALES_DESC "
+				+ "where DIRECCION_SUCURSAL LIKE ?";
+	
+
+		
+		
+		
+		conn = ConnectionFactory.getInstance().getConexion();
+		if(conn == null){
+			System.out.println("No se estableció conexión con la base de datos");
+		}
+
+
+		List<PmSucursalDTO> dtos = new ArrayList<>();
+		PreparedStatement ps;
+		ps = conn.prepareStatement(leer);
+		ps.setString(1, dato);
+
+
+
+		
+		ResultSet rs = ps.executeQuery();
+		PmSucursalDTO dto;
+		while(rs.next()){
+			dto = new PmSucursalDTO();
+			dto.setIdSucursal(rs.getInt("ID_SUCURSAL"));
+			dto.setIdNegocio(rs.getInt("ID_NEGOCIO"));
+//			dto.setNombreSucursal(Cifrado.decifrar(clave, vi, rs.getString("NOMBRE_SUCURSAL")));
+			dto.setNombreSucursal(rs.getString("NOMBRE_SUCURSAL"));
+//			dto.setDireccionSucursal(Cifrado.decifrar(clave, vi, rs.getString("DIRECCION_SUCURSAL")));
+			dto.setDireccionSucursal(rs.getString("DIRECCION_SUCURSAL"));
+//			dto.setDireccionDetalleSucursal(rs.getString("DIRECCION_DETALLE_SUCURSAL") != null?Cifrado.decifrar(clave, vi, rs.getString("DIRECCION_DETALLE_SUCURSAL")):rs.getString("DIRECCION_DETALLE_SUCURSAL"));
+			dto.setDireccionDetalleSucursal(rs.getString("DIRECCION_DETALLE_SUCURSAL"));
+			dto.setLongitud(rs.getDouble("LONGITUD"));
+			dto.setLatitud(rs.getDouble("LATITUD"));
+			dto.setIdEstado(rs.getInt("ID_ESTADO"));
+			dtos.add(dto);
+			
+		}
+		
+		
+		
+		if(conn != null){
+			conn.close();
+		}
+		if(rs != null){
+			rs.close();
+		}
+		if(ps != null){
+			ps.close();
+		}
+		
+		return dtos;
+	}	
+	
 
 	@Override
 	public PmSucursalDTO buscar(int idSucursal) throws Exception {
@@ -82,7 +160,7 @@ public class PmSucursalDAO implements IPmSucursal{
 
 	@Override
 	public boolean insertarCifrado(PmSucursalDTO dto) throws Exception {
-		String insertarCif = "INSERT INTO FRAMEWORK.PM_SUCURSALES_C (ID_SUCURSAL, ID_NEGOCIO, NOMBRE_SUCURSAL, DIRECCION_SUCURSAL,"
+		String insertarCif = "INSERT INTO FRAMEWORK.PM_SUCURSALES_DESC (ID_SUCURSAL, ID_NEGOCIO, NOMBRE_SUCURSAL, DIRECCION_SUCURSAL,"
 				+ " DIRECCION_DETALLE_SUCURSAL, LONGITUD, LATITUD, ID_ESTADO) values (?,?,?,?,?,?,?,?)";
 		conn = ConnectionFactory.getInstance().getConexion();
 		if(conn == null){
@@ -91,8 +169,10 @@ public class PmSucursalDAO implements IPmSucursal{
 		PreparedStatement ps = conn.prepareStatement(insertarCif);
 		ps.setInt(1, dto.getIdSucursal());
 		ps.setInt(2, dto.getIdNegocio());
-		ps.setString(3, Cifrado.cifrar(clave, vi, dto.getNombreSucursal()));
-		ps.setString(4, Cifrado.cifrar(clave, vi, dto.getDireccionSucursal()));
+//		ps.setString(3, Cifrado.decifrar(clave, vi, dto.getNombreSucursal()));
+//		ps.setString(4, Cifrado.decifrar(clave, vi, dto.getDireccionSucursal()));
+		ps.setString(3, dto.getNombreSucursal());
+		ps.setString(4, dto.getDireccionSucursal());
 		ps.setString(5, dto.getDireccionDetalleSucursal());
 		ps.setDouble(6, dto.getLongitud());
 		ps.setDouble(7, dto.getLatitud());

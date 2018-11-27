@@ -7,6 +7,7 @@ import bellicose.com.cifrado.dto.*;
 public interface IPmSucursal {
 
 	List<PmSucursalDTO> leer() throws Exception;
+	List<PmSucursalDTO> leerLike(String dato) throws Exception;
 	PmSucursalDTO buscar(int idSucursal) throws Exception;
 	boolean actualizar(PmSucursalDTO dto) throws Exception;
 	boolean agregar(PmSucursalDTO dto) throws Exception;
